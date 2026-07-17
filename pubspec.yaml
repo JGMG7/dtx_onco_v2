@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.12.4
   fl_chart: ^1.2.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +48,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  image: ^4.3.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#0097A7"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

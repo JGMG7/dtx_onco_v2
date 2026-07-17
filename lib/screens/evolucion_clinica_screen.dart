@@ -123,7 +123,7 @@ class _EvolucionClinicaScreenState extends State<EvolucionClinicaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Histórico: ${widget.idParticipante}'),
-        backgroundColor: Colors.blueGrey.shade50,
+        backgroundColor: Colors.cyan.shade50,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _obtenerHistorico(),

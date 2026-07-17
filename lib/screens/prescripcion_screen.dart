@@ -35,6 +35,7 @@ class PrescripcionScreen extends StatelessWidget {
     final List<Ejercicio> ejercicios = MotorClinico.obtenerRutina(cohorte, diaSemana);
     final String intensidad = MotorClinico.obtenerIntensidad(semanaPrograma, diaSemana);
     final bool esDescarga = MotorClinico.esSemanaDescarga(semanaPrograma);
+    final bool esExploracion = MotorClinico.esFaseExploracion(semanaPrograma);
 
     Color colorFase = Colors.green;
     String tituloSemaforo = '🟢 Dosis Completa';
@@ -73,6 +74,31 @@ class PrescripcionScreen extends StatelessWidget {
                 const Divider(height: 48),
 
                 if (!semaforo.contains('ROJO')) ...[
+                  if (esExploracion) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(color: Colors.purple.shade50, borderRadius: BorderRadius.circular(8)),
+                      child: const Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search, color: Colors.purple),
+                              SizedBox(width: 8),
+                              Text('Fase de Exploración', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Buscá tu carga de referencia: empezá liviano y subí dentro de la misma sesión hasta sentir el esfuerzo indicado.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (esDescarga) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

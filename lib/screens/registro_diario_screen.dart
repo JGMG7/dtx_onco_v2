@@ -109,16 +109,26 @@ class _RegistroDiarioScreenState extends State<RegistroDiarioScreen> {
         "zonas_dolor": zonasDolorTxt
       };
 
-      await _registrosService.guardarRegistroDiario(widget.idParticipante, widget.pin, hoyStr, datosTriage);
+      final resultado = await _registrosService.guardarRegistroDiario(widget.idParticipante, widget.pin, hoyStr, datosTriage);
 
       if (!context.mounted) return;
+
+      if (resultado == ResultadoEnvio.guardadoLocalmente) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('📡 Sin conexión. Tu registro se guardó en el dispositivo y se enviará automáticamente cuando haya internet.'),
+          backgroundColor: Colors.blueGrey,
+        ));
+      }
+
       if (widget.verRutina && widget.grupo != 'CONTROL' && (now.weekday == 1 || now.weekday == 3 || now.weekday == 5)) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => PrescripcionScreen(cohorte: widget.cohorte, semaforo: semaforo, fechaInicio: widget.fechaInicio)),
           );
       } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ ¡Registro guardado con éxito!'), backgroundColor: Colors.green));
+          if (resultado == ResultadoEnvio.enviado) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ ¡Registro guardado con éxito!'), backgroundColor: Colors.green));
+          }
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
       }
     } catch (e) {
@@ -153,7 +163,7 @@ class _RegistroDiarioScreenState extends State<RegistroDiarioScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registro Diario', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.teal.shade50,
+        backgroundColor: Colors.cyan.shade50,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -321,7 +331,7 @@ class _RegistroDiarioScreenState extends State<RegistroDiarioScreen> {
                         ? const FilledButton(onPressed: null, child: CircularProgressIndicator())
                         : FilledButton(
                             onPressed: _enviarReporte,
-                            style: FilledButton.styleFrom(backgroundColor: Colors.teal),
+                            style: FilledButton.styleFrom(backgroundColor: Colors.cyan.shade700),
                             child: Text(widget.grupo == 'CONTROL' ? 'Enviar Registro Diario 🚀' : 'Enviar Reporte 🚀', style: const TextStyle(fontSize: 18)),
                           ),
                   ),

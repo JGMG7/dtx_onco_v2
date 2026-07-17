@@ -99,6 +99,11 @@ class MotorClinico {
     return semanaPrograma % 4 == 0;
   }
 
+  // Semanas 1-2: fase de exploración. Todavía no hay historial de cargas
+  // fiable para el paciente, así que el objetivo de la sesión es encontrar
+  // la carga de referencia (ramp-up intrasesión), no aplicarla.
+  static bool esFaseExploracion(int semanaPrograma) => semanaPrograma <= 2;
+
   static String nombreBloque(int semanaPrograma) {
     if (semanaPrograma > 12) return "Fase de Mantenimiento";
     if (semanaPrograma <= 4) return "Bloque 1: Adaptación Anatómica";

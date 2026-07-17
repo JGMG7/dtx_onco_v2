@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/supabase_config.dart';
@@ -50,6 +51,14 @@ class _FormularioPacienteState extends State<_FormularioPaciente> {
   final _pinController = TextEditingController();
   final _registrosService = RegistrosService();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // No bloquea la UI: si quedó un registro pendiente por falta de conexión
+    // de una visita anterior, se reintenta al volver a abrir este login.
+    unawaited(_registrosService.sincronizarPendientes());
+  }
 
   Future<void> _iniciarSesion() async {
     if (_idController.text.isEmpty || _pinController.text.isEmpty) {

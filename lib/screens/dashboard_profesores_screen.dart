@@ -6,6 +6,7 @@ import 'login_screen.dart';
 import 'evolucion_clinica_screen.dart';
 import 'cuaderno_sesion_screen.dart';
 import 'enrolar_participante_screen.dart';
+import 'adherencia_screen.dart';
 
 // ==========================================
 // 💻 PANTALLA 2: DASHBOARD DEL PROFESOR
@@ -88,7 +89,14 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
     }
   }
 
-  void _mostrarDetalles(BuildContext context, Map<String, dynamic> rep) {
+  Future<void> _mostrarDetalles(BuildContext context, Map<String, dynamic> rep) async {
+    final idParticipante = rep['id_participante'] as String;
+    final fecha = DateTime.parse(rep['fecha'] as String);
+    final datosParticipante = await _registrosService.obtenerDatosParticipante(idParticipante);
+    final diasAlerta = await _registrosService.obtenerDiasAlertaUltimos7(idParticipante, fecha);
+
+    if (!context.mounted) return;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -120,6 +128,22 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
+                if (datosParticipante.notasClinicas != null && datosParticipante.notasClinicas!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(8)),
+                    child: Text('⚠️ Notas clínicas: ${datosParticipante.notasClinicas}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+                if (diasAlerta >= 3) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(8)),
+                    child: Text('⚠️ Carga alostática: $diasAlerta/7 últimos días en alerta', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                  ),
+                ],
                 const Divider(height: 24),
                 const Text('💤 Sueño', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
                 Text('Eficiencia: ${rep['eficiencia_sueno'].toStringAsFixed(1)}%'),
@@ -175,10 +199,17 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reporte - EFADAP', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blueGrey.shade50,
+        backgroundColor: Colors.cyan.shade50,
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_add, color: Colors.teal),
+            icon: Icon(Icons.fact_check, color: Colors.cyan.shade700),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdherenciaScreen()));
+            },
+            tooltip: 'Adherencia',
+          ),
+          IconButton(
+            icon: Icon(Icons.person_add, color: Colors.cyan.shade700),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const EnrolarParticipanteScreen()))
                   .then((_) { if (context.mounted) setState(() {}); });
@@ -186,7 +217,7 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
             tooltip: 'Enrolar Participante',
           ),
           IconButton(
-            icon: const Icon(Icons.download, color: Colors.teal),
+            icon: Icon(Icons.download, color: Colors.cyan.shade700),
             onPressed: _exportarBaseDatosCSV,
             tooltip: 'Exportar Base de Datos (CSV)',
           ),
@@ -205,7 +236,7 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            color: Colors.blueGrey.shade50,
+            color: Colors.cyan.shade50,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

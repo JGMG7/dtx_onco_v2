@@ -15,6 +15,7 @@ class _EnrolarParticipanteScreenState extends State<EnrolarParticipanteScreen> {
   final _registrosService = RegistrosService();
   final _idController = TextEditingController();
   final _pinController = TextEditingController();
+  final _notasController = TextEditingController();
 
   String _cohorte = 'MAMA';
   String _grupo = 'CONTROL';
@@ -37,6 +38,7 @@ class _EnrolarParticipanteScreenState extends State<EnrolarParticipanteScreen> {
         grupo: _grupo,
         cohorte: _cohorte,
         verRutina: _verRutina,
+        notasClinicas: _notasController.text.trim().isEmpty ? null : _notasController.text.trim(),
       );
 
       if (!context.mounted) return;
@@ -58,6 +60,7 @@ class _EnrolarParticipanteScreenState extends State<EnrolarParticipanteScreen> {
   void dispose() {
     _idController.dispose();
     _pinController.dispose();
+    _notasController.dispose();
     super.dispose();
   }
 
@@ -66,7 +69,7 @@ class _EnrolarParticipanteScreenState extends State<EnrolarParticipanteScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enrolar Participante'),
-        backgroundColor: Colors.teal.shade50,
+        backgroundColor: Colors.cyan.shade50,
       ),
       body: Center(
         child: ConstrainedBox(
@@ -113,6 +116,17 @@ class _EnrolarParticipanteScreenState extends State<EnrolarParticipanteScreen> {
                   title: const Text('Recibe rutina de ejercicio'),
                   value: _verRutina,
                   onChanged: (valor) => setState(() => _verRutina = valor),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _notasController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Notas clínicas / contraindicaciones (opcional)',
+                    hintText: 'Ej. evitar carga unilateral en brazo derecho por linfedema',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.warning_amber),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
