@@ -16,7 +16,7 @@ jobs:
           status=$(curl -s -o /dev/null -w "%{http_code}" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
-            "${SUPABASE_URL}/rest/v1/")
+            "${SUPABASE_URL}/rest/v1/participantes?select=id_participante&limit=1")
           echo "HTTP status: $status"
           if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
             echo "::warning::Supabase respondió $status. Si el proyecto está pausado, hay que reactivarlo manualmente desde el dashboard (esto no lo puede hacer un ping automático)."
