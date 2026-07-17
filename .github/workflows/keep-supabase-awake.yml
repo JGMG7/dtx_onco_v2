@@ -13,10 +13,15 @@ jobs:
     steps:
       - name: Ping Supabase REST API
         run: |
-          curl -sf -o /dev/null \
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
-            "${SUPABASE_URL}/rest/v1/"
+            "${SUPABASE_URL}/rest/v1/")
+          echo "HTTP status: $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "::warning::Supabase respondió $status. Si el proyecto está pausado, hay que reactivarlo manualmente desde el dashboard (esto no lo puede hacer un ping automático)."
+            exit 1
+          fi
         env:
           SUPABASE_URL: https://mxjihlciggfuxznqunpr.supabase.co
           SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14amlobGNpZ2dmdXh6bnF1bnByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTAwNDMsImV4cCI6MjA5NTEyNjA0M30.rWBDLNeNZJlmTEHQE_IRhKqlf9Wtc5Zv8RVJeh5ULoM
