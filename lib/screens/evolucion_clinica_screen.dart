@@ -153,7 +153,7 @@ class _EvolucionClinicaScreenState extends State<EvolucionClinicaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Registros Totales del Paciente: ${datos.length}', style: const TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                    Text('Registros Totales del Participante: ${datos.length}', style: const TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 32),
 
                     _construirGrafico(datos, '1. Respuesta Somática', 'fatiga_bfi', 'dolor_maximo', Colors.redAccent, Colors.orangeAccent, 10),

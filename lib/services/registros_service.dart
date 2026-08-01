@@ -21,7 +21,7 @@ class RegistrosService {
 
   // Si falla por falta de conexión (el request nunca llega al servidor), el
   // registro se guarda en el dispositivo y se reintenta más tarde en vez de
-  // perder lo que el paciente escribió. Si el servidor sí respondió con un
+  // perder lo que el participante escribió. Si el servidor sí respondió con un
   // error real (PostgrestException/AuthException), no tiene sentido
   // reintentar solo: se relanza para que se muestre como error de verdad.
   Future<ResultadoEnvio> guardarRegistroDiario(
@@ -63,7 +63,7 @@ class RegistrosService {
 
   // Reintenta cualquier registro guardado localmente por falta de conexión.
   // Pensado para llamarse "fire-and-forget" al iniciar la app y al entrar al
-  // login de paciente — no bloquea la UI ni lanza errores hacia arriba.
+  // login de participante — no bloquea la UI ni lanza errores hacia arriba.
   Future<void> sincronizarPendientes() async {
     final prefs = await SharedPreferences.getInstance();
     final claves = prefs.getKeys().where((k) => k.startsWith(_prefijoPendiente)).toList();

@@ -21,9 +21,28 @@ class DashboardProfesoresScreen extends StatefulWidget {
 class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
   final _registrosService = RegistrosService();
   String _filtroSemaforo = 'Todos';
+  DateTime _fechaSeleccionada = DateTime.now();
 
   Future<List<Map<String, dynamic>>> _obtenerReportes() {
     return _registrosService.obtenerReportes();
+  }
+
+  String _formatearFecha(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  bool _esHoy(DateTime d) {
+    final hoy = DateTime.now();
+    return d.year == hoy.year && d.month == hoy.month && d.day == hoy.day;
+  }
+
+  Future<void> _elegirFecha() async {
+    final elegida = await showDatePicker(
+      context: context,
+      initialDate: _fechaSeleccionada,
+      firstDate: DateTime(2025),
+      lastDate: DateTime.now(),
+    );
+    if (elegida != null) setState(() => _fechaSeleccionada = elegida);
   }
 
   Future<void> _marcarComoResuelto(String idReporte, BuildContext dialogContext) async {
@@ -35,7 +54,7 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
 
       if (!context.mounted) return;
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Paciente atendido. Alerta resuelta.'), backgroundColor: Colors.green));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Participante atendido. Alerta resuelta.'), backgroundColor: Colors.green));
 
     } catch (e) {
       if (!context.mounted) return;
@@ -235,6 +254,40 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
       body: Column(
         children: [
           Container(
+            padding: const EdgeInsets.only(top: 12, bottom: 4),
+            color: Colors.cyan.shade50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => setState(() => _fechaSeleccionada = _fechaSeleccionada.subtract(const Duration(days: 1))),
+                  tooltip: 'Día anterior',
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.calendar_today, size: 18),
+                  label: Text(
+                    _esHoy(_fechaSeleccionada) ? 'Hoy — ${_formatearFecha(_fechaSeleccionada)}' : _formatearFecha(_fechaSeleccionada),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: _elegirFecha,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: _esHoy(_fechaSeleccionada)
+                      ? null
+                      : () => setState(() => _fechaSeleccionada = _fechaSeleccionada.add(const Duration(days: 1))),
+                  tooltip: 'Día siguiente',
+                ),
+                if (!_esHoy(_fechaSeleccionada))
+                  TextButton(
+                    onPressed: () => setState(() => _fechaSeleccionada = DateTime.now()),
+                    child: const Text('Volver a hoy'),
+                  ),
+              ],
+            ),
+          ),
+          Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             color: Colors.cyan.shade50,
             child: SingleChildScrollView(
@@ -261,11 +314,22 @@ class _DashboardProfesoresScreenState extends State<DashboardProfesoresScreen> {
                 if (snapshot.hasError) return Center(child: Text('❌ Error: ${snapshot.error}'));
 
                 final reportes = snapshot.data ?? [];
-                final reportesFiltrados = _filtroSemaforo == 'Todos' ? reportes : reportes.where((rep) => rep['semaforo'].toString().contains(_filtroSemaforo)).toList();
+                final fechaFiltro = _formatearFecha(_fechaSeleccionada);
+                final reportesDelDia = reportes.where((rep) => rep['fecha'] == fechaFiltro).toList();
+                final reportesFiltrados = _filtroSemaforo == 'Todos'
+                    ? reportesDelDia
+                    : reportesDelDia.where((rep) => rep['semaforo'].toString().contains(_filtroSemaforo)).toList();
 
                 if (reportesFiltrados.isEmpty) {
+                  final String etiquetaDia = _esHoy(_fechaSeleccionada) ? 'hoy' : 'el $fechaFiltro';
                   return Center(
-                    child: Text(_filtroSemaforo == 'Todos' ? '📭 Aún no hay registros.' : '🎉 ¡Excelente! No hay pacientes en semáforo $_filtroSemaforo hoy.', style: const TextStyle(fontSize: 16, color: Colors.blueGrey)),
+                    child: Text(
+                      _filtroSemaforo == 'Todos'
+                          ? '📭 Aún no hay registros $etiquetaDia.'
+                          : '🎉 ¡Excelente! No hay participantes en semáforo $_filtroSemaforo $etiquetaDia.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                    ),
                   );
                 }
 

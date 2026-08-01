@@ -100,7 +100,7 @@ class MotorClinico {
   }
 
   // Semanas 1-2: fase de exploración. Todavía no hay historial de cargas
-  // fiable para el paciente, así que el objetivo de la sesión es encontrar
+  // fiable para el participante, así que el objetivo de la sesión es encontrar
   // la carga de referencia (ramp-up intrasesión), no aplicarla.
   static bool esFaseExploracion(int semanaPrograma) => semanaPrograma <= 2;
 

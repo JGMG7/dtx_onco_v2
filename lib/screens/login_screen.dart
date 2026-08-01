@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            _FormularioPaciente(),
+            _FormularioParticipante(),
             _FormularioInvestigador(),
           ],
         ),
@@ -38,15 +38,15 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-// --- FORMULARIO 1: PACIENTES ---
-class _FormularioPaciente extends StatefulWidget {
-  const _FormularioPaciente();
+// --- FORMULARIO 1: PARTICIPANTES ---
+class _FormularioParticipante extends StatefulWidget {
+  const _FormularioParticipante();
 
   @override
-  State<_FormularioPaciente> createState() => _FormularioPacienteState();
+  State<_FormularioParticipante> createState() => _FormularioParticipanteState();
 }
 
-class _FormularioPacienteState extends State<_FormularioPaciente> {
+class _FormularioParticipanteState extends State<_FormularioParticipante> {
   final _idController = TextEditingController();
   final _pinController = TextEditingController();
   final _registrosService = RegistrosService();
